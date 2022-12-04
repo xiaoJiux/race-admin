@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>用户积分列表</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="../../lib/layui-v2.7.5/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="../../css/public.css" media="all">
+    <script src="../../js/BaseJs.js"></script>
+    <script src="../../lib/jquery-3.4.1/jquery-3.4.1.min.js"></script>
+    <style type="text/css">
+        .layui-table-cell {
+            /*text-align: center;*/
+            /*height: auto;*/
+            /*white-space: normal;*/
+            height: 40px;
+        }
+
+        .layui-table img {
+            /*max-width: 30px;*/
+            width: 30px;
+            height: 30px;
+            border-radius: 30px;
+            border: 2px #ccc solid;
+        }
+    </style>
+</head>
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+
+        <fieldset class="table-search-fieldset">
+            <legend>搜索信息</legend>
+            <div style="margin: 10px 10px 10px 10px">
+                <form class="layui-form layui-form-pane" action="">
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label for="info" class="layui-form-label">积分详情</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="info" id="info" autocomplete="off"
+                                       class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">积分用户</label>
+                            <div class="layui-input-inline">
+                                <select name="user" id="user" lay-search lay-filter="">
+                                    <option value="">请选择用户</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <button type="submit" class="layui-btn layui-btn-primary" lay-submit
+                                    lay-filter="data-search-btn"><i class="layui-icon"></i> 搜 索
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </fieldset>
+
+        <script type="text/html" id="toolbarDemo">
+            <div class="layui-btn-container">
+                <button class="layui-btn layui-btn-sm layui-btn-primary layui-border-green" lay-event="reload"> 刷新
+                </button>
+                <button class="layui-btn layui-btn-sm data-add-btn layui-btn-primary layui-border-blue" lay-event="add">
+                    添加
+                </button>
+                <button class="layui-btn layui-btn-sm data-delete-btn layui-btn-primary layui-border-red"
+                        lay-event="delete"> 删除
+                </button>
+                <button class="layui-btn layui-btn-sm layui-btn-primary" lay-event="multi-row">
+                    多行
+                </button>
+                <button class="layui-btn layui-btn-sm layui-btn-primary" lay-event="default-row">
+                    单行
+                </button>
+            </div>
+        </script>
+
+        <table class="layui-hide layui-laypage-count" id="pointsTableId" lay-filter="pointsTableFilter"></table>
+
+        <script type="text/html" id="pointsTableBar">
+            <a class="layui-btn layui-btn-normal layui-btn-xs data-count-edit" lay-event="edit"
+               style="background-color: #5FB878;">编辑</a>
+            <a class="layui-btn layui-btn-xs layui-btn-danger data-count-delete" lay-event="delete">删除</a>
+        </script>
+
+    </div>
+</div>
+<script src="../../lib/layui-v2.7.5/layui/layui.js" charset="utf-8"></script>
+<script>
+    var layer;
+    var form;
+    layui.use(['form', 'table', 'layer', 'upload'], function () {
+        var $ = layui.jquery,
+            table = layui.table;
+        form = layui.form;
+        layer = layui.layer;
+        var upload = layui.upload;
+
+        table.render({
+            elem: '#pointsTableId',
+            url: BaseUrl + 'points/findByPage', //暂时先用这个不用查询的接口，到时候要和小强同学沟通
+            method: 'post',
+            toolbar: '#toolbarDemo',
+            headers: {
+                "X-token": localStorage.getItem("X-token")
+            }, //请求头 token写在这里
+            where: {
+                info: "-1",
+                name: -1
+            },//查询条件
+            parseData: function (res) { //res即为原始的数据返回
+                return {
+                    "code": 0,
+                    "msg": res.message,
+                    "count": res.count,
+                    "data": res.data
+                }
+            },
+            title: "用户积分",
+            defaultToolbar: ['filter', 'exports', 'print', {
+                title: '提示',
+                layEvent: 'LAYTABLE_TIPS',
+                icon: 'layui-icon-tips'
+            }],
+            totalRow: true,//开启合计行
+            cols: [[
+                {type: "checkbox", width: 50, fixed: 'left'},
+                {field: 'id', width: 70, title: 'ID', sort: true, fixed: 'left', totalRow: '合计:'},
+                {
+                    field: 'img',
+                    width: 60,
+                    title: '头像',
+                    templet: '<div><img src="{{d.img}}"/></div>'
+                },
+                {field: 'numId', width: 150, title: '用户学号/工号', sort: true},
+                {field: 'name', width: 130, title: '积分用户', sort: true},
+                {field: 'number', width: 130, title: '积分数量', sort: true, totalRow: '{{= parseInt(d.TOTAL_NUMS) }}  😊'},
+                {field: 'info', width: 350, title: '积分详情', sort: true},
+                {field: 'addName', width: 150, title: '执行用户', sort: true},
+                {title: '操作', minWidth: 125, toolbar: '#pointsTableBar', fixed: 'right', align: 'center'}
+            ]],
+            limits: [10, 15, 20, 25, 50, 100],
+            limit: 10,
+            page: { //支持传入 laypage 组件的所有参数（某些参数除外，如：jump/elem） - 详见文档
+                layout: ['prev', 'page', 'next', 'skip', 'count', 'limit'], //自定义分页布局
+                theme: '#393D49'
+                , first: false //不显示首页
+                , last: false  //不显示尾页
+            },
+            text: {
+                none: '暂无相关数据' //默认：无数据。
+            },
+            lineStyle: null
+            // skin: 'line'//行边框风格
+        });
+
+        // 行双击事件
+        table.on('rowDouble(pointsTableFilter)', function (obj) {
+            var data = obj.data;
+            var id = data.id; //用户积分id
+            var number = data.number; //用户单项积分
+            var info = data.info; //积分详情
+
+            //用户学号/工号
+            var numId = data.numId; //用户学号
+            //用户姓名
+            var name = data.name;
+            //用户头像
+            var img = data.img;
+            //执行用户
+            var addName = data.addName;
+
+            //单机行，弹出层
+            var index = layer.open({
+                title: '用户积分信息',
+                type: 1,
+                shade: 0.8,
+                btn: '关闭', //按钮
+                btnAlign: 'c', //按钮居中
+                // maxmin: true,
+                // shadeClose: true,
+                // area: ['100%', '100%'],
+                area: ['300px', '340px'],
+                btnColor: '#5FB878',
+                content: '<div style="text-align: center; margin: 20px 0"><img src="' + img + '" style="width:35px; height: 35px; border-radius: 35px;"></div>' +
+                    '<div style="text-align: center; font-size: 12px;margin: 10px 0;"><span style="font-weight: bolder;">用户积分ID:</span> &nbsp;&nbsp;&nbsp;&nbsp;' + id + '</div>' +
+                    '<div style="text-align: center; font-size: 12px;margin: 10px 0;"><span style="font-weight: bolder;">学号/工号:</span> &nbsp;&nbsp;&nbsp;&nbsp;' + numId + '</div>' +
+                    '<div style="text-align: center; font-size: 12px;margin: 10px 0;"><span style="font-weight: bolder;">用户姓名:</span> &nbsp;&nbsp;&nbsp;&nbsp;' + name + '</div>' +
+                    '<div style="text-align: center; font-size: 12px;margin: 10px 0;"><span style="font-weight: bolder;">积分详情:</span> &nbsp;&nbsp;&nbsp;&nbsp;' + info + '</div>' +
+                    '<div style="text-align: center; font-size: 12px;margin: 10px 0;"><span style="font-weight: bolder;">用户单项积分:</span> &nbsp;&nbsp;&nbsp;&nbsp;' + number + '</div>' +
+                    '<div style="text-align: center; font-size: 12px;margin: 10px 0;"><span style="font-weight: bolder;">执行用户:</span> &nbsp;&nbsp;&nbsp;&nbsp;' + addName + '</div>'
+            });
+        });
+
+        // 监听搜索操作
+        form.on('submit(data-search-btn)', function (data) {
+            // var result = JSON.stringify(data.field);
+            // layer.alert(result, {
+            //     title: '最终的搜索信息'
+            // });
+
+            //这个居然不是根据用户id来查询，而是用户姓名，所以可能重名，不同学号
+            var name;
+            if ($("#user").val() === '') {
+                name = -1;
+            } else {
+                name = $("#user").val();
+            }
+
+            var info;
+            if ($("#info").val() === ''){
+                info = -1;
+            }else {
+                info = $("#info").val()
+            }
+            //执行搜索重载
+            table.reload('pointsTableId', {
+                url: BaseUrl + "points/findByPage",
+                request: { //往后端传入的参数的名称
+                    pageName: 'page',
+                    limitName: "limit"
+                },
+                where: {
+                    info: info,
+                    name: name
+                },
+                page: {
+                    curr: 1, //当前页码
+                    //支持传入 laypage 组件的所有参数（某些参数除外，如：jump/elem） - 详见文档
+                    layout: ['prev', 'page', 'next', 'skip', 'count', 'limit'], //自定义分页布局
+                    theme: '#393D49'
+                    , first: false //不显示首页
+                    , last: false  //不显示尾页
+                }
+            });
+
+            return false;
+        });
+
+        /**
+         * toolbar监听事件
+         */
+        table.on('toolbar(pointsTableFilter)', function (obj) {
+            if (obj.event === 'add') {  // 监听添加操作
+                var index = layer.open({
+                    title: '添加用户积分',
+                    type: 2,
+                    shade: 0.2,
+                    maxmin: true,
+                    shadeClose: true,
+                    area: ['100%', '100%'],
+                    content: 'addPoints.html',
+                    end: function () {//关闭后回调
+                        reload();//刷新
+                    }
+                });
+                $(window).on("resize", function () {
+                    layer.full(index);
+                });
+            } else if (obj.event === 'delete') {  // 监听删除操作
+                var checkStatus = table.checkStatus('pointsTableId')
+                    , data = checkStatus.data;
+                // layer.alert(JSON.stringify(data));
+                //JSON.stringify(data)：将data转换为json
+                //JSON.stringify(data).length:是 json字符串的长度
+
+                var len = data.length;
+                if (len >= 1) {
+                    //将选中的行进行删除
+                    layer.confirm('确定删除选中的用户积分么？', {
+                        title: '删除'
+                    }, function (index) {
+                        //删除接口，需要把接口改为post方法
+                        for (var i = 0; i < len; i++) {
+                            $.ajax({
+                                url: BaseUrl + 'points/DeleteById',
+                                method: 'post',
+                                data: {
+                                    id: data[i].id
+                                },
+                                beforeSend: function (request) {      //使用beforeSend
+                                    request.setRequestHeader("X-token", localStorage.getItem("X-token"));
+                                    // request.setRequestHeader("Content-Type","application/json");
+                                }, //token
+                                success: function (res) {//成功回调
+                                    // var object = JSON.parse(res)
+                                    if (res.code === 0 && i === len) {
+                                        // 关闭弹出层
+                                        layer.close(index);
+                                        layer.msg("删除成功！", {icon: 6});
+                                        reload(); //刷新表格
+                                    } else {
+                                        layer.msg("删除失败！", {icon: 5});
+                                    }
+                                }
+                            });
+                        }
+                    }, function () {
+                        layer.msg("你点击了取消按钮！");
+                    });
+                } else if (len === 0) {
+                    layer.alert('您没有选中任何一个用户积分!', {icon: 7});
+                }
+            } else if (obj.event === 'reload') {//刷新页面
+                reload();
+            } else if (obj.event === 'multi-row') { //设置多行
+                table.reload('pointsTableId', {
+                    // 设置行样式，此处以设置多行高度为例。若为单行，则没必要设置改参数 - 注：v2.7.0 新增
+                    lineStyle: 'height: 100px;'
+                });
+                layer.msg('成功切换为多行模式！');
+            } else if (obj.event === 'default-row') { //设置单行
+                table.reload('pointsTableId', {
+                    lineStyle: null // 恢复单行
+                });
+                layer.msg('成功切换为单行模式！');
+            }
+        });
+
+        //监听表格复选框选择
+        table.on('checkbox(pointsTableFilter)', function (obj) {
+            console.log(obj)
+        });
+
+        //操作的内容
+        table.on('tool(pointsTableFilter)', function (obj) {
+            var data = obj.data;
+            if (obj.event === 'edit') {//修改用户权限
+                console.log(data.add);
+                if (data.add == localStorage.getItem("id")) {
+                    localStorage.setItem("id01", data.id);
+                    localStorage.setItem("number01", data.number);
+                    localStorage.setItem("info01", data.info);
+                    localStorage.setItem("add01", data.add);
+                    localStorage.setItem("user01", data.user);
+
+                    //这个改修改！！！！！！！！！！！
+                    //用户姓名
+                    localStorage.setItem("name01", data.name);
+                    //执行用户姓名
+                    localStorage.setItem("addName01", data.addName);
+                    // localStorage.setItem();
+                    var index = layer.open({
+                        title: '修改用户积分',
+                        type: 2,
+                        shade: 0.2,
+                        maxmin: true,
+                        shadeClose: true,
+                        area: ['100%', '100%'],
+                        content: 'upPoints.html',
+                        end: function () {//关闭后回调
+                            reload();//刷新
+                        }
+                    });
+                    $(window).on("resize", function () {
+                        layer.full(index);
+                    });
+                    return false;
+                } else {
+                    layer.alert("您不是执行用户不可修改哦！", {icon: 5});
+                    return false;
+                }
+            } else if (obj.event === 'delete') { //删除此用户权限
+                layer.confirm('确定删除此用户积分么？', {
+                    title: '删除'
+                }, function (index) {
+                    //需要把接口改为post
+                    //删除此用户权限
+                    $.ajax({
+                        url: BaseUrl + 'Points/delPoints',
+                        method: 'post',
+                        data: {
+                            id: data.id
+                        },
+                        beforeSend: function (request) {      //使用beforeSend
+                            request.setRequestHeader("X-token", localStorage.getItem("X-token"));
+                            // request.setRequestHeader("Content-Type","application/json");
+                        }, //token
+                        success: function (res) {//成功回调
+                            // var object = JSON.parse(res)
+                            if (res.code === 0) {
+                                obj.del();//删除这行
+                                // 关闭弹出层
+                                layer.close(index);
+                                layer.msg("删除成功！", {icon: 6});
+                            } else {
+                                layer.msg("删除失败！", {icon: 5});
+                            }
+                        }
+                    });
+                }, function () {
+                    layer.msg("你点击了取消按钮！");
+                });
+            }
+        });
+
+    });
+
+    //刷新页面
+    function reload() {
+        var table = layui.table;
+        table.reload('pointsTableId', {
+            url: BaseUrl + "points/findByPage",
+            method: 'post',
+            request: { //往后端传入的参数名称
+                pageName: 'page',
+                limitName: 'limit'
+            },
+            where: {
+                info: "-1",
+                name: -1
+            },
+            page: {
+                curr: 1,//当前页码
+                //支持传入 laypage 组件的所有参数（某些参数除外，如：jump/elem） - 详见文档
+                layout: ['prev', 'page', 'next', 'skip', 'count', 'limit'], //自定义分页布局
+                theme: '#393D49'
+                , first: false //不显示首页
+                , last: false  //不显示尾页
+            }
+        })
+    }
+
+    $(function () {
+        //获取用户列表
+        var getAllUser = function () {
+            //这个接口已经测试成功了！！！！！！！
+            $.ajax({
+                url: BaseUrl + 'user/getAllUser',  //查询所有的用户，接口
+                method: 'get',
+                data: {},
+                beforeSend: function (request) {      //使用beforeSend
+                    request.setRequestHeader("X-token", localStorage.getItem("X-token"));
+                    // request.setRequestHeader("Content-Type","application/json");
+                }, //token
+                success: function (res) {
+                    // var object = JSON.parse(res);
+                    if (res.code === 0) {
+                        // console.log(object.data)
+                        for (let i = 0; i < res.data.length; i++) {
+                            var option = document.createElement("option");
+                            // option.setAttribute("value", res.data[i].id);
+                            option.setAttribute("value", res.data[i].name);
+                            option.innerHTML = res.data[i].name;
+
+                            var user = document.getElementById("user");
+                            user.appendChild(option);
+                        }
+                        //更新 lay-filter="test2" 所在容器内的全部 select 状态
+                        form.render('select');
+                    }
+                }
+            });
+        }
+        getAllUser();//获取用户列表
+    });
+</script>
+
+</body>
+</html>

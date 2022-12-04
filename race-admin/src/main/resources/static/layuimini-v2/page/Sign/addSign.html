@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>新增活动签到</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="../../lib/layui-v2.7.5/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="../../css/public.css" media="all">
+    <style>
+        body {
+            background-color: #ffffff;
+        }
+    </style>
+    <script src="../../js/BaseJs.js"></script>
+    <script src="../../lib/jquery-3.4.1/jquery-3.4.1.min.js"></script>
+<!--    <link rel="stylesheet" href="../../lib/lay-module/step-lay/step.css" media="all">-->
+</head>
+<body>
+<div class="layui-form layui-form-pane" style="margin-top: 2rem;">
+    <div class="layui-form-item">
+        <label for="location" class="layui-form-label required">签到地点</label>
+        <div class="layui-input-block">
+            <input type="text" name="location" id="location" lay-verify="required"
+                   lay-reqtext="签到地点不能为空" placeholder="请输入签到地点" value="" class="layui-input">
+            <p style="color: #999; font-size: 12px; margin-top: 5px;">填写新增的签到地点</p>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">时间</label>
+        <div class="layui-input-block">
+            <input type="text" id="date" class="layui-input" placeholder="签到签退时间">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label required">签到用户</label>
+        <div class="layui-input-block">
+            <select name="user" id="user" lay-search lay-verify="required" lay-reqtext="报名用户不能为空">
+                <option value="">请选择签到用户</option>
+            </select>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label required">活动名称</label>
+        <div class="layui-input-block">
+            <select name="activity" id="activity" lay-search lay-verify="required" lay-reqtext="活动名称不能为空">
+                <option value="">请选择活动名称</option>
+            </select>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label required">签到or签退</label>
+        <div class="layui-input-block">
+            <select name="type" id="type" lay-search lay-verify="required" lay-reqtext="签到or签退不能为空">
+                <option value="">请选择签到or签退</option>
+            </select>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" style="background-color: #5FB878;" lay-submit lay-filter="saveBtn">确认保存</button>
+        </div>
+    </div>
+</div>
+<script src="../../lib/layui-v2.7.5/layui/layui.js" charset="utf-8"></script>
+<script src="../../js/lay-config.js?v=1.0.4" charset="utf-8"></script>
+<script>
+    var form;
+    layui.use(['layer', 'form', 'laydate'], function () {
+        var layer = layui.layer,
+            $ = layui.$;
+        form = layui.form;
+        var laydate = layui.laydate;
+
+        laydate.render({
+            elem: '#date',
+            type: 'datetime' //选择器类型
+        });
+
+        //监听提交
+        form.on('submit(saveBtn)', function (data) {
+            // layer.alert($('input:radio[name="sex"]:checked').val());
+
+            if ($("#date").val() === '') {
+                layer.msg('请选择签到签退时间！', {icon: 5});
+            } else {
+                //点击新增用户权限
+                $.ajax({
+                    url: BaseUrl + "sign/save",
+                    contentType: "application/json; charset=utf-8",
+                    method: 'post',
+                    data: JSON.stringify({
+                        "location": $("#location").val(),
+                        "date": $("#date").val(),
+                        "user": $("#user").val(),
+                        "activity": $("#activity").val(),
+                        "type": $("#type").val()
+                    }),
+                    beforeSend: function (request) {      //使用beforeSend
+                        request.setRequestHeader("X-token", localStorage.getItem("X-token"));
+                        request.setRequestHeader("Content-Type", "application/json");
+                    }, //token
+                    success: function (res) {
+                        // var object = JSON.parse(res)
+                        if (res.code === 0) {
+                            var index = layer.alert("新增成功！", {
+                                title: '新增提示',
+                                icon: 6
+                            }, function () {
+                                // 关闭弹出层
+                                layer.close(index);
+
+                                //关闭此页面，返回到用户权限列表
+                                var iframeIndex = parent.layer.getFrameIndex(window.name);
+                                parent.layer.close(iframeIndex);
+                            });
+                        } else {
+                            layer.alert("新增失败！", {icon: 5});
+                        }
+                    }
+                });
+            }
+
+            return false;
+        });
+
+    });
+
+    $(function () {
+        // 获取所有的id和用户名称
+        var getAllUser = function () {
+            $.ajax({
+                url: BaseUrl + 'user/getAllUser',
+                method: 'get',
+                data: {},
+                beforeSend: function (request) {      //使用beforeSend
+                    request.setRequestHeader("X-token", localStorage.getItem("X-token"));
+                    // request.setRequestHeader("Content-Type","application/json");
+                }, //token
+                success: function (res) {
+                    // var object = JSON.parse(res);
+                    if (res.code === 0) {
+                        // console.log(object.data)
+                        for (let i = 0; i < res.data.length; i++) {
+                            var option = document.createElement("option");
+                            option.setAttribute("value", res.data[i].id);
+                            option.innerHTML = res.data[i].name;
+
+                            var user = document.getElementById("user");
+                            user.appendChild(option);
+                        }
+                        //更新 lay-filter="test2" 所在容器内的全部 select 状态
+                        form.render('select');
+                    }
+                }
+            });
+        }
+        getAllUser();// 获取所有的id和用户名称
+
+        //获取活动状态列表，不分页,这个接口需要小强同学写
+        var getAllActivity = function () {
+            $.ajax({
+                url: BaseUrl + 'activity/getAllUser',
+                method: 'get',
+                data: {},
+                beforeSend: function (request) {      //使用beforeSend
+                    request.setRequestHeader("X-token", localStorage.getItem("X-token"));
+                    // request.setRequestHeader("Content-Type","application/json");
+                }, //token
+                success: function (res) {
+                    // var object = JSON.parse(res);
+                    if (res.code === 20000) {
+                        // console.log(object.data)
+                        for (let i = 0; i < res.data.length; i++) {
+                            var option = document.createElement("option");
+                            option.setAttribute("value", res.data[i].id);
+                            option.innerHTML = res.data[i].name;
+
+                            var activity = document.getElementById("activity");
+                            activity.appendChild(option);
+                        }
+                        //更新 lay-filter="test2" 所在容器内的全部 select 状态
+                        form.render('select');
+                    }
+                }
+            });
+        }
+        getAllActivity();//获取活动状态列表，不分页
+
+        //获取
+        var getAllType = function () {
+            $.ajax({
+                url: BaseUrl + 'signType/getAllUser',
+                method: 'get',
+                data: {},
+                beforeSend: function (request) {      //使用beforeSend
+                    request.setRequestHeader("X-token", localStorage.getItem("X-token"));
+                    // request.setRequestHeader("Content-Type","application/json");
+                }, //token
+                success: function (res) {
+                    // var object = JSON.parse(res);
+                    if (res.code === 0) {
+                        // console.log(object.data)
+                        for (let i = 0; i < res.data.length; i++) {
+                            var option = document.createElement("option");
+                            option.setAttribute("value", res.data[i].id);
+                            option.innerHTML = res.data[i].type;
+
+                            var type = document.getElementById("type");
+                            type.appendChild(option);
+                        }
+                        //更新 lay-filter="test2" 所在容器内的全部 select 状态
+                        form.render('select');
+                    }
+                }
+            });
+        }
+        getAllType();//获取活动状态列表，不分页
+    });
+</script>
+</body>
+</html>

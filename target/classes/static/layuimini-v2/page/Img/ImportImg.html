@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>帖子列表</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="../../lib/layui-v2.7.5/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="../../css/public.css" media="all">
+    <script src="../../js/BaseJs.js"></script>
+    <script src="../../lib/jquery-3.4.1/jquery-3.4.1.min.js"></script>
+</head>
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <fieldset class="layui-elem-field layui-field-title" >
+            <legend>上传多张图片</legend>
+        </fieldset>
+
+        <div class="layui-upload">
+            <button type="button" class="layui-btn layui-btn-sm layui-btn-primary  layui-border-green"
+                    id="test2" style="margin-left: 2rem;">
+                <i class="layui-icon layui-icon-upload-drag"></i> 多图片上传
+            </button>
+            <blockquote class="layui-elem-quote layui-quote-nm" style="margin-top: 1rem;">
+                预览图：
+                <div class="layui-upload-list" id="demo2"></div>
+            </blockquote>
+        </div>
+    </div>
+</div>
+<script src="../../lib/layui-v2.7.5/layui/layui.js" charset="utf-8"></script>
+<script>
+    layui.use(['upload', 'element', 'layer'], function () {
+        var $ = layui.jquery
+            , upload = layui.upload
+            , element = layui.element
+            , layer = layui.layer;
+
+        //多图片上传
+        upload.render({
+            elem: '#test2'
+            , url: BaseUrl + 'files/upload' //此处配置你自己的上传接口即可
+            ,method: 'post' //请求类型
+            , multiple: true
+            , headers: {
+                "X-token": localStorage.getItem("X-token")
+            } //请求头 token写在这里
+            , before: function (obj) {
+                //预读本地文件示例，不支持ie8
+                obj.preview(function (index, file, result) {
+                    $('#demo2').append('<img src="' + result + '" alt="' + file.name + '" class="layui-upload-img">')
+                });
+            }
+            , done: function (res) {
+                //上传完毕
+                if (res.code === 0){
+                    layer.msg("上传成功！", {icon: 6});
+                } else {
+                    layer.msg("上传失败！", {icon: 5});
+                }
+            }
+        });
+    });
+</script>
+</body>
+</html>

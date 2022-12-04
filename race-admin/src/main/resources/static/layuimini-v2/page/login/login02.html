@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>24小时校园反诈中心后台登录</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta http-equiv="Access-Control-Allow-Origin" content="*">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <link rel="stylesheet" href="../../lib/layui-v2.7.5/layui/css/layui.css" media="all">
+    <!--[if lt IE 9]>
+    <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+    <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <script src="../../js/BaseJs.js"></script>
+    <!--  图标图片  -->
+    <link rel="icon" href="../../images/logo.png" type="image/x-icon">
+    <script src="../../lib/jquery-3.4.1/jquery-3.4.1.min.js"></script>
+    <style>
+        .main-body {
+            top: 50%;
+            left: 50%;
+            position: absolute;
+            -webkit-transform: translate(-50%, -50%);
+            -moz-transform: translate(-50%, -50%);
+            -ms-transform: translate(-50%, -50%);
+            -o-transform: translate(-50%, -50%);
+            transform: translate(-50%, -50%);
+            overflow: hidden;
+        }
+
+        .login-main .login-bottom .center .item input {
+            display: inline-block;
+            width: 227px;
+            height: 22px;
+            padding: 0;
+            position: absolute;
+            border: 0;
+            outline: 0;
+            font-size: 14px;
+            letter-spacing: 0;
+        }
+
+        .login-main .login-bottom .center .item .icon-1 {
+            background: url(../../images/icon-login.png) no-repeat 1px 0;
+        }
+
+        .login-main .login-bottom .center .item .icon-2 {
+            background: url(../../images/icon-login.png) no-repeat -54px 0;
+        }
+
+        .login-main .login-bottom .center .item .icon-3 {
+            background: url(../../images/icon-login.png) no-repeat -106px 0;
+        }
+
+        .login-main .login-bottom .center .item .icon-4 {
+            background: url(../../images/icon-login.png) no-repeat 0 -43px;
+            position: absolute;
+            right: -10px;
+            cursor: pointer;
+        }
+
+        .login-main .login-bottom .center .item .icon-5 {
+            background: url(../../images/icon-login.png) no-repeat -55px -43px;
+        }
+
+        .login-main .login-bottom .center .item .icon-6 {
+            background: url(../../images/icon-login.png) no-repeat 0 -93px;
+            position: absolute;
+            right: -10px;
+            margin-top: 8px;
+            cursor: pointer;
+        }
+
+        .login-main .login-bottom .tip .icon-nocheck {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 2px;
+            border: solid 1px #9abcda;
+            position: relative;
+            top: 2px;
+            margin: 1px 8px 1px 1px;
+            cursor: pointer;
+        }
+
+        .login-main .login-bottom .tip .icon-check {
+            margin: 0 7px 0 0;
+            width: 14px;
+            height: 14px;
+            border: none;
+            background: url(../../images/icon-login.png) no-repeat -111px -48px;
+        }
+
+        .login-main .login-bottom .center .item .icon {
+            display: inline-block;
+            width: 33px;
+            height: 22px;
+        }
+
+        .login-main .login-bottom .center .item {
+            width: 288px;
+            height: 35px;
+            border-bottom: 1px solid #dae1e6;
+            margin-bottom: 35px;
+        }
+
+        .login-main {
+            width: 428px;
+            position: relative;
+            float: left;
+
+            border: rgb(3, 215, 180) 1.5px solid;
+            border-radius: 15px;
+            overflow: hidden;
+            box-sizing:border-box;
+        }
+
+        .login-main .login-top {
+            height: 117px;
+            background-color: rgb(0,217,182);
+            /*border-radius: 12px 12px 0 0;*/
+            font-family: SourceHanSansCN-Regular;
+            /*font-size: 30px;*/
+            font-size: 23px;
+            font-weight: 400;
+            font-stretch: normal;
+            letter-spacing: 0;
+            color: #fff;
+            line-height: 117px;
+            text-align: center;
+            overflow: hidden;
+            -webkit-transform: rotate(0);
+            -moz-transform: rotate(0);
+            -ms-transform: rotate(0);
+            -o-transform: rotate(0);
+            transform: rotate(0);
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-main .login-top .bg1 {
+            display: inline-block;
+            width: 74px;
+            height: 74px;
+            background: rgb(75, 151, 147);
+            opacity: .1;
+            border-radius: 0 74px 0 0;
+            position: absolute;
+            left: 0;
+            top: 43px;
+        }
+
+        .login-main .login-top .bg2 {
+            display: inline-block;
+            width: 94px;
+            height: 94px;
+            background: rgb(75, 151, 147);
+            opacity: .1;
+            border-radius: 50%;
+            position: absolute;
+            right: -16px;
+            top: -16px;
+        }
+
+        .login-main .login-bottom {
+            width: 428px;
+            background: #fff;
+            border-radius: 0 0 12px 12px;
+            padding-bottom: 53px;
+        }
+
+        .login-main .login-bottom .center {
+            width: 288px;
+            margin: 0 auto;
+            padding-top: 40px;
+            padding-bottom: 15px;
+            position: relative;
+        }
+
+        .login-main .login-bottom .tip {
+            clear: both;
+            height: 16px;
+            line-height: 16px;
+            width: 288px;
+            margin: 0 auto;
+        }
+
+        body {
+            background: url(../../images/aboutFzp/background001.jpg) 0% 0% / cover no-repeat;
+            position: static;
+            font-size: 12px;
+        }
+
+        input::-webkit-input-placeholder {
+            color: #a6aebf;
+        }
+
+        input::-moz-placeholder { /* Mozilla Firefox 19+ */
+            color: #a6aebf;
+        }
+
+        input:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+            color: #a6aebf;
+        }
+
+        input:-ms-input-placeholder { /* Internet Explorer 10-11 */
+            color: #a6aebf;
+        }
+
+        input:-webkit-autofill { /* 取消Chrome记住密码的背景颜色 */
+            -webkit-box-shadow: 0 0 0 1000px white inset !important;
+        }
+
+        html {
+            height: 100%;
+        }
+
+        .login-main .login-bottom .tip {
+            clear: both;
+            height: 16px;
+            line-height: 16px;
+            width: 288px;
+            margin: 0 auto;
+        }
+
+        .login-main .login-bottom .tip .login-tip {
+            font-family: MicrosoftYaHei;
+            font-size: 12px;
+            font-weight: 400;
+            font-stretch: normal;
+            letter-spacing: 0;
+            color: #9abcda;
+            cursor: pointer;
+        }
+
+        .login-main .login-bottom .tip .forget-password {
+            font-stretch: normal;
+            letter-spacing: 0;
+            /*color: #1aa094;*/
+            color: rgb(0,217,182);
+            text-decoration: none;
+            position: absolute;
+            right: 62px;
+        }
+
+        .login-main .login-bottom .login-btn {
+            width: 288px;
+            height: 40px;
+            /*background-color: #1aa094;*/
+            background-color: rgb(0,217,182);
+            border-radius: 16px;
+            margin: 24px auto 0;
+            text-align: center;
+            line-height: 40px;
+            color: #fff;
+            font-size: 14px;
+            letter-spacing: 0;
+            cursor: pointer;
+            border: none;
+        }
+
+        .login-main .login-bottom .center .item .validateImg {
+            position: absolute;
+            right: 1px;
+            cursor: pointer;
+            height: 36px;
+            border: 1px solid #e6e6e6;
+        }
+
+        .footer {
+            left: 0;
+            bottom: 0;
+            color: #fff;
+            width: 100%;
+            position: absolute;
+            text-align: center;
+            line-height: 30px;
+            padding-bottom: 10px;
+            text-shadow: #000 0.1em 0.1em 0.1em;
+            font-size: 14px;
+        }
+
+        .padding-5 {
+            padding: 5px !important;
+        }
+
+        .footer a, .footer span {
+            color: #fff;
+        }
+
+        @media screen and (max-width: 428px) {
+            .login-main {
+                width: 360px !important;
+            }
+
+            .login-main .login-top {
+                width: 360px !important;
+            }
+
+            .login-main .login-bottom {
+                width: 360px !important;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="main-body">
+    <div class="login-main">
+        <div class="login-top">
+            <img src="../../images/aboutFzp/logoFzp.png" style="width: 35px;height: 35px;">
+            &nbsp;
+            <!--！！！！ 待改！！！！ -->
+            <span>24小时校园反诈中心&nbsp;&nbsp;后台登录</span>
+            <span class="bg1">24小时</span>
+            <span class="bg2">反诈中心</span>
+        </div>
+        <form class="layui-form login-bottom">
+            <div class="center">
+                <!-- 用户邮箱输入框 -->
+                <div class="item">
+                    <i class="icon layui-icon layui-icon-email" style="font-size: 24px;color: #bbb;"></i>
+                    <input type="text" name="mail" id="mail" placeholder="请输入用户邮箱"/>
+                </div>
+                <!-- 验证码输入框 -->
+                <div id="validatePanel" class="item" style="width: 150px;">
+                    <i class="icon layui-icon layui-icon-release" style="font-size: 21px;color: #bbb;"></i>
+                    <input type="text" name="code" id="code" placeholder="请输入验证码" maxlength="4">
+                    <!-- 发送验证码按钮 -->
+                    <button id="sendCode" class="validateImg layui-btn" lay-submit
+                            type="button" lay-filter="" style="background-color: rgb(0,217,182);">发送验证码
+                    </button>
+                </div>
+            </div>
+            <div class="tip">
+                <a href="" class="login-tip">收不到验证码？</a>
+                <a href="login01.html" class="forget-password">学号/工号密码登录</a>
+            </div>
+            <div class="layui-form-item" style="text-align:center; width:100%;height:100%;margin:0px;">
+                <button class="login-btn" lay-submit="" lay-filter="login">立即登录</button>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="footer">
+    <!--！！！！ 待改！！！！ -->
+    ©版权所有 2022-2026 <span class="padding-5">|</span><a target="_blank" href="">24小时校园反诈中心后台管理系统</a>
+</div>
+<script src="../../lib/layui-v2.7.5/layui/layui.js" charset="utf-8"></script>
+<script>
+    var time = 60;
+    var layer;
+    layui.use('layer', function () {
+        layer = layui.layer;
+    })
+
+    $(document).ready(function () {
+        $("#sendCode").click(function () {
+            //发送验证码 的方法
+            var sendCode = function () {
+                if ($("#mail").val() === "") {
+                    layer.alert("输入邮箱号后再点击获取验证码", {icon: 5});
+                } else {
+                    var myreg = /^([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+@([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+\.[a-zA-Z]{2,3}$/;
+                    if (!myreg.test($("#mail").val())) {
+                        layer.alert("邮箱格式错误！请检查后重新输入", {icon: 2});
+                    } else {
+                        var loadix = layer.load(1, {shade: [0.1, '#fff']});
+                        $.ajax({
+                            url: BaseUrl + "User/sendCode",
+                            type: 'get',
+                            data: {
+                                mail: $("#mail").val()
+                            },
+                            success: function (res) {
+                                layer.close(loadix);
+                                var obj = JSON.parse(res);
+                                if (obj.code === 0) {
+                                    layer.msg(obj.msg, {icon: 6});
+                                    //倒计时
+                                    getRandomCode();
+                                } else {
+                                    layer.msg(obj.msg, {icon: 5});
+                                }
+                            },
+                            error: function (e) {
+                                console.log(e.Status);
+                                console.log(e.responseText);
+                            }
+                        })
+                    }
+                }
+            }
+
+            sendCode();//发送验证码
+        });
+
+        //倒计时
+        function getRandomCode() {
+            $("#sendCode").attr('disabled', true);
+            if (time === 1) {
+                document.getElementById("sendCode").innerHTML = "获取验证码";
+                $("#sendCode").attr('disabled', false);
+                time = 60;
+                return;
+            } else {
+                time--;
+                document.getElementById("sendCode").innerHTML = time + "秒后重发";
+            }
+            setTimeout(function () {
+                console.log("setTimeout");
+                getRandomCode();
+            }, 1000)
+        }
+    });
+
+
+    layui.use(['form', 'jquery'], function () {
+        var $ = layui.jquery,
+            form = layui.form;
+        // layer = layui.layer;
+
+        // 登录过期的时候，跳出ifram框架
+        if (top.location != self.location) top.location = self.location;
+
+        // 进行登录操作
+        form.on('submit(login)', function (data) {
+            data = data.field;
+            if (data.mail == '') {
+                layer.alert("邮箱地址不能为空！", {icon: 5});
+                return false;
+            }
+            if (data.code == '') {
+                layer.alert("邮箱验证码不能为空！", {icon: 5});
+                return false;
+            }
+
+            $.ajax({
+                url: BaseUrl + 'User/isCode', //请求路径
+                method: 'post',
+                data: {
+                    mail: $("#mail").val(),
+                    code: $("#code").val()
+                },//参数
+                success: function (res) {
+                    var object = JSON.parse(res);
+                    if (object.code === 0) {
+                        localStorage.setItem("id", object.data.id);
+                        localStorage.setItem("name", object.data.name);
+                        localStorage.setItem("password", object.data.password);
+                        localStorage.setItem("introduce", object.data.introduce);
+                        localStorage.setItem("birthday", object.data.birthday);
+                        localStorage.setItem("mail", object.data.mail);
+                        localStorage.setItem("sex", object.data.sex);
+                        localStorage.setItem("level", object.data.level);
+                        localStorage.setItem("institute", object.data.institute);
+                        localStorage.setItem("sexId", object.data.sexId);
+                        localStorage.setItem("levelId", object.data.levelId);
+                        localStorage.setItem("instituteId", object.data.instituteId);
+
+                        localStorage.setItem("img", object.data.img);
+
+                        window.alert("登录成功！");
+                        window.location = '../../index.html';
+                    } else {
+                        layer.alert("验证码错误！", {icon: 5});
+                    }
+                }
+            });
+            return false;
+        });
+    });
+</script>
+</body>
+</html>

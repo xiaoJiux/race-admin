@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no" />
+<meta name="renderer" content="webkit" />
+<title>sdEditor富文本编辑器 - 轻量级web富文本编辑器 - 移动端富文本编辑器 - 可视化Html网页编辑器</title>
+<meta name="keywords" content="sdEditor,富文本编辑器,开源html编辑器,可视化html编辑器,移动端富文本编辑器">
+<meta name="description" content="sdEditor是一款基于Jquery开发的轻量化、所见即所得的web富文本编辑器，体积小、安全性高、同时支持一个页面多次调用，支持移动端自适应使用。有效过滤XSS攻击，不破坏Html结构。">
+<link rel="stylesheet" href="public/css/ui.css">
+<link rel="stylesheet" href="public/css/style.css">
+<script src="public/js/jquery.js"></script>
+<script src="editor/editor.js"></script>
+</head>
+
+<body>
+	    
+	<h1>sdEditor富文本编辑器</h1>
+    <div class="ui-demo">
+        <div class="ui-tabs ui-tabs-white" data-href="1">
+            <ul class="ui-tabs-nav">
+                <li><a href="./">调用方式</a></li>
+                <li class="active"><a href="./param.html">可选参数</a></li>
+                <li><a href="./mode.html">模式演示</a></li>
+                <li><a href="./toolbar.html">自定义工具条</a></li>
+                <li><a href="./btn.html">自定义按钮</a></li>
+                <li><a href="./upload.html">上传演示</a></li>
+                <li><a href="./api.html">接口交互</a></li> 
+            </ul>
+            <div class="ui-tabs-content">
+                <div class="ui-tabs-pane active">
+                     <!---->
+                     <span class="ui-text-red">sdEditor</span>内置很多可选参数，请根据自身需要配置。
+                     <div class="ui-menu ui-menu-blue ui-mt-30 ui-mb-30"><div class="ui-menu-name">参数列表</div></div>
+                     <div class="ui-table-wrap">
+                        <table class="ui-table ui-table-border ui-table-hover ui-table-striped">
+                            <thead class="ui-thead-gray">
+                            <tr>
+                                <th>参数</th>
+                                <th>用途</th>
+                                <th>默认值</th>
+                                <th>可选值</th>
+                                <th>示范</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>toolbar</td>
+                                <td class="ui-text-left ui-text-gray">工具栏模式</td>
+                                <td>full</td>
+                                <td class="ui-text-left ui-text-gray">full、admin、mini</td>
+                                <td class="ui-text-left">toolbar:'full'</td>
+                            </tr>
+                            <tr>
+                                <td>mode</td>
+                                <td class="ui-text-left ui-text-gray">编辑器模式</td>
+                                <td>html</td>
+                                <td class="ui-text-left ui-text-gray">html、code</td>
+                                <td class="ui-text-left">mode:'html'</td>
+                            </tr>
+                            <tr>
+                                <td>height</td>
+                                <td class="ui-text-left ui-text-gray">编辑器高度</td>
+                                <td>300</td>
+                                <td class="ui-text-left ui-text-gray">auto</td>
+                                <td class="ui-text-left">height:'300'</td>
+                            </tr>
+                            <tr>
+                                <td>value</td>
+                                <td class="ui-text-left ui-text-gray">初始值</td>
+                                <td></td>
+                                <td class="ui-text-left"></td>
+                                <td class="ui-text-left">value:'初始值'</td>
+                            </tr>
+                            <tr>
+                                <td>upload</td>
+                                <td class="ui-text-left ui-text-gray">上传接口路径</td>
+                                <td></td>
+                                <td class="ui-text-left"></td>
+                                <td class="ui-text-left">upload:'/upload.php'</td>
+                            </tr>
+                            <tr>
+                                <td>params</td>
+                                <td class="ui-text-left ui-text-gray">上传接口参数</td>
+                                <td></td>
+                                <td class="ui-text-left"></td>
+                                <td class="ui-text-left">params:{token:"1234"}</td>
+                            </tr>
+                            <tr>
+                                <td>save</td>
+                                <td class="ui-text-left ui-text-gray">保存远程图片接口路径</td>
+                                <td></td>
+                                <td class="ui-text-left"></td>
+                                <td class="ui-text-left">save:'/save.php'</td>
+                            </tr>
+                            <tr>
+                                <td>arrow</td>
+                                <td class="ui-text-left ui-text-gray">下拉小箭头</td>
+                                <td>false</td>
+                                <td class="ui-text-left">true、false</td>
+                                <td class="ui-text-left">arrow:true</td>
+                            </tr>
+                            <tr>
+                                <td>autofocus</td>
+                                <td class="ui-text-left ui-text-gray">是否自动焦点</td>
+                                <td>false</td>
+                                <td class="ui-text-left">true、false</td>
+                                <td class="ui-text-left">autofocus:true</td>
+                            </tr>
+                            <tr>
+                                <td>autosave</td>
+                                <td class="ui-text-left ui-text-gray">自动同步</td>
+                                <td>true</td>
+                                <td class="ui-text-left">true、false</td>
+                                <td class="ui-text-left">autosave:true</td>
+                            </tr>
+                            <tr>
+                                <td>pagebreak</td>
+                                <td class="ui-text-left ui-text-gray">分页符</td>
+                                <td>_editor_page_</td>
+                                <td class="ui-text-left"></td>
+                                <td class="ui-text-left">pagebreak:'_sdcms_editor_page_'</td>
+                            </tr>
+                            <tr>
+                                <td>fontfamily</td>
+                                <td class="ui-text-left ui-text-gray">下拉字体</td>
+                                <td></td>
+                                <td class="ui-text-left"></td>
+                                <td class="ui-text-left">fontfamily:['宋体','微软雅黑']</td>
+                            </tr>
+                            <tr>
+                                <td>fontsize</td>
+                                <td class="ui-text-left ui-text-gray">下拉字体大小</td>
+                                <td></td>
+                                <td class="ui-text-left"></td>
+                                <td class="ui-text-left">fontsize:['12','14']</td>
+                            </tr>
+                            <tr>
+                                <td>color</td>
+                                <td class="ui-text-left ui-text-gray">下拉颜色选择</td>
+                                <td></td>
+                                <td class="ui-text-left"></td>
+                                <td class="ui-text-left">color:['FFFFFF','000000']</td>
+                            </tr>
+                            <tr>
+                                <td>headline</td>
+                                <td class="ui-text-left ui-text-gray">下拉标题选择</td>
+                                <td></td>
+                                <td class="ui-text-left"></td>
+                                <td class="ui-text-left">headline:[{t:'正文',c:'p',s:16},{t:'标题1',c:'h1',s:28}]</td>
+                            </tr>
+                            <tr>
+                                <td>bgColor</td>
+                                <td class="ui-text-left ui-text-gray">小工具背景颜色</td>
+                                <td></td>
+                                <td class="ui-text-left"></td>
+                                <td class="ui-text-left">bgColor:['FFFFFF','000000']</td>
+                            </tr>
+                            <tr>
+                                <td>plug</td>
+                                <td class="ui-text-left ui-text-gray">自定义按钮</td>
+                                <td></td>
+                                <td class="ui-text-left"></td>
+                                <td class="ui-text-left">plug:{}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    </div>
+                     <!---->
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

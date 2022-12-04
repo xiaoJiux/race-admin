@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>用户信息</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="../../lib/layui-v2.7.5/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="../../css/public.css" media="all">
+    <style>
+        .layui-form-item .layui-input-company {
+            width: auto;
+            padding-right: 10px;
+            line-height: 38px;
+        }
+    </style>
+    <script type="text/javascript" src="../../lib/jquery-3.4.1/jquery-3.4.1.min.js"></script>
+    <script src="../../js/BaseJs.js"></script>
+    <!--  这页似乎有点bug,刷新页面，性别显示不出来。  -->
+</head>
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+
+        <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+            <legend>用户信息</legend>
+        </fieldset>
+
+        <div class="layui-form layui-form-pane">
+            <div class="layui-form-item">
+                <label class="layui-form-label">头像</label>
+                <div class="layui-input-inline">
+                    <!-- 点击头像，跳转到头像修改页面 -->
+                    <a href="../UserManager/ResetImg.html" style="padding-left: 30px;" id="resImg">
+                        <img src="" id="UserHead"
+                             style="height: 35px;width: 35px;border-radius: 35px; border: 2px #ccc solid;">
+                    </a>
+                </div>
+
+                <label for="id" class="layui-form-label">用户ID</label>
+                <div class="layui-input-inline">
+                    <input type="text" readonly="readonly" id="id" name="id" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label for="number" class="layui-form-label">学号/工号</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="number" name="number" readonly="readonly" value="" class="layui-input">
+                </div>
+
+                <label for="level" class="layui-form-label">用户权限</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="level" name="level" readonly="readonly"
+                           class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label for="name" class="layui-form-label required">用户名</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="name" name="name" lay-verify="required" lay-reqtext="用户名不能为空"
+                           placeholder="请输入用户名" value="" class="layui-input">
+                </div>
+                <label for="mail" class="layui-form-label">邮箱</label>
+                <div class="layui-input-inline">
+                    <input type="mail" id="mail" name="mail" placeholder="请输入邮箱" value="" class="layui-input">
+                </div>
+
+                <label class="layui-form-label">生日</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="birthday" id="birthday" lay-verify="birthday" placeholder="2000-01-01 00:00:00"
+                           autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label required">二级学院</label>
+                <div class="layui-input-block">
+                    <select name="institute" id="institute" lay-search lay-filter=""
+                            lay-verify="required" lay-reqtext="请选择二级学院">
+                        <option value="">请选择二级学院</option>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label for="phone" class="layui-form-label">手机号码</label>
+                <div class="layui-input-block">
+                    <input type="text" name="phone" id="phone"
+                           placeholder="请输入手机号码" value="" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item" pane="">
+                <label class="layui-form-label required">性别</label>
+                <div class="layui-input-block" id="XinBie">
+
+                </div>
+            </div>
+            <div class="layui-form-item layui-form-text">
+                <label for="introduce" class="layui-form-label">用户简介</label>
+                <div class="layui-input-block">
+                    <textarea name="introduce" id="introduce" class="layui-textarea"
+                              placeholder="请输入用户简介"></textarea>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button class="layui-btn" style="background-color: #5FB878;"
+                            lay-submit lay-filter="saveBtn">
+                        确认保存
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../../lib/layui-v2.7.5/layui/layui.js" charset="utf-8"></script>
+<script src="../../js/lay-config.js?v=1.0.4" charset="utf-8"></script>
+<script>
+    var form;
+    layui.use(['form', 'miniTab', 'laydate'], function () {
+        var layer = layui.layer,
+            $ = layui.$,
+            miniTab = layui.miniTab;
+        form = layui.form;
+        var laydate = layui.laydate;
+
+        //生日日期选择
+        laydate.render({
+            elem: '#birthday',
+            type: 'datetime' //选择器类型
+        });
+
+        //跳转到头像哪里用的
+        localStorage.setItem("img01",localStorage.getItem("img"));
+
+        //监听提交
+        form.on('submit(saveBtn)', function (data) {
+            // var index = layer.alert(JSON.stringify(data.field), {
+            //     title: '最终的提交信息'
+            // }, function () {
+            //     layer.close(index);
+            //     miniTab.deleteCurrentByIframe();
+            // });
+            layer.confirm('确定修改用户信息么？', {
+                icon: 7
+            }, function () {
+                $.ajax({
+                    url: BaseUrl + 'user/updateById',
+                    method: 'post',
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify({
+                        "number": localStorage.getItem("number"),
+                        "id": localStorage.getItem("id"),
+                        "name": $("#name").val(), //用户名
+                        "password": localStorage.getItem("password"),
+                        "introduce": $("#introduce").val(),
+                        "birthday": $("#birthday").val(),
+                        //这个后面应该也会需要
+                        "phone": $("#phone").val(),
+                        "mail": $("#mail").val(),
+                        "img": localStorage.getItem("img"),
+                        "sex": $('input:radio[name="sex"]:checked').val(),
+                        "level": localStorage.getItem("level"),
+                        "institute": $("#institute").val()
+                    }),
+                    beforeSend: function (request) {      //使用beforeSend
+                        request.setRequestHeader("X-token", localStorage.getItem("X-token"));
+                        request.setRequestHeader("Content-Type", "application/json");
+                    }, //token
+                    success: function (res) {
+                        // var object = JSON.parse(res);
+                        if (res.code === 0) {
+                            var index = layer.alert("修改成功！", {
+                                icon: 6
+                            }, function () {
+                                localStorage.setItem("id", localStorage.getItem("id"));
+                                localStorage.setItem("number", localStorage.getItem("number"));
+                                localStorage.setItem("name", $("#name").val()); //姓名
+                                localStorage.setItem("password", localStorage.getItem("password"));
+                                localStorage.setItem("introduce", $("#introduce").val());
+                                localStorage.setItem("birthday", $("#birthday").val());
+                                localStorage.setItem("mail", $("#mail").val());
+                                localStorage.setItem("img", localStorage.getItem("img"));
+
+                                //这几个是id值
+                                localStorage.setItem("sex", $('input:radio[name="sex"]:checked').val());
+                                localStorage.setItem("level", localStorage.getItem("level"));
+                                localStorage.setItem("institute", $("#institute").val());
+
+                                //这几个是String值
+                                localStorage.setItem("sexString", $('input:radio[name="sex"]:checked').html());
+                                localStorage.setItem("levelString",localStorage.getItem("levelString"));
+                                localStorage.setItem("instituteString",  $("#institute").find("option:selected").html());
+
+                                //新增的手机号码
+                                localStorage.setItem("phone",$("#phone").val());
+
+                                layer.close(index);
+                                miniTab.deleteCurrentByIframe();
+                            });
+                        } else {
+                            layer.msg("修改失败！", {icon: 5});
+                        }
+                    }
+                })
+            }, function () {
+                layer.msg("你点击了取消按钮！");
+            });
+            return false;
+        });
+
+    });
+
+    // <!--  页面渲染  -->
+    $(function () {
+        // $("#resImg").click(function (){
+        //     localStorage.setItem("back","../Base/userSetting.html");
+        // })
+
+        $("#UserHead").attr("src",localStorage.getItem("img"));
+
+        $("#id").val(localStorage.getItem("id"));
+        $("#number").val(localStorage.getItem("number"));
+        $("#name").val(localStorage.getItem("name"));
+        // $("#level").val(localStorage.getItem("level"));
+        $("#mail").val(localStorage.getItem("mail"));
+        $("#birthday").val(localStorage.getItem("birthday"));
+        $("#introduce").val(localStorage.getItem("introduce"));
+        $("#phone").val(localStorage.getItem("phone"));
+
+        //不过按理说只有超级管理员可以登录后台
+        if (localStorage.getItem("level") == 4) {
+            $("#level").val(localStorage.getItem("levelString"));
+            $("#level").css({"color": "#FF5722"});
+        } else if (localStorage.getItem("level") == 3) {
+            $("#level").val(localStorage.getItem("levelString"));
+            $("#level").css({"color": "#FFB800"});
+        } else if (localStorage.getItem("level") == 2) {
+            $("#level").val(localStorage.getItem("levelString"));
+            $("#level").css({"color": "#31BDEC"});
+        } else if (localStorage.getItem("level") == 1) {
+            $("#level").val(localStorage.getItem("levelString"));
+            $("#level").css({"color": "#5FB878"});
+        } else {
+            $("#level").val(localStorage.getItem("levelString"));
+            $("#level").css({"color": "#393D49"});
+        }
+
+        //获取用户性别列表
+        var getAllSex = function () {
+            $.ajax({
+                url: BaseUrl + 'sex/getAllUser',
+                method: 'get',
+                data: {},
+                beforeSend: function(request) {      //使用beforeSend
+                    request.setRequestHeader("X-token", localStorage.getItem("X-token"));
+                }, //token
+                success: function (res) {
+                    // var object = JSON.parse(res);
+                    if (res.code === 0) {
+                        // console.log(object.data)
+                        for (let i = 0; i < res.data.length; i++) {
+                            var input = document.createElement("input");
+                            input.setAttribute("value",  res.data[i].id);
+                            input.setAttribute("type", "radio");
+                            input.setAttribute("name", "sex");
+                            input.setAttribute("title", res.data[i].sex);
+                            if( res.data[i].id==
+                                localStorage.getItem("sex")) { //添加默认选中
+                                input.setAttribute("checked", "checked");
+                            }
+
+                            var XinBie = document.getElementById("XinBie");
+                            XinBie.appendChild(input);
+                        }
+                        //更新 lay-filter="test2" 所在容器内的全部 select 状态
+                        // form.render('select');
+                        form.render(); // 渲染全部
+                    }
+                }
+            });
+        }
+        getAllSex();//获取用户性别列表
+
+        //获取二级学院列表
+        var getAllInstitute = function () {
+            $.ajax({
+                url: BaseUrl + 'institute/getAllUser',
+                type: 'get',
+                data: {},
+                beforeSend: function(request) {      //使用beforeSend
+                    request.setRequestHeader("X-token", localStorage.getItem("X-token"));
+                }, //token
+                success: function (res) {
+                    if (res.code === 0) {
+                        for (let i = 0; i < res.data.length; i++) {
+                            var option = document.createElement("option");
+                            option.setAttribute("value", res.data[i].id);
+                            option.innerHTML = res.data[i].institute;
+
+                            if (res.data[i].id ==
+                                localStorage.getItem("institute")) { //添加默认选中
+                                option.setAttribute("selected", "selected");
+                            }
+
+                            var institute = document.getElementById("institute");
+                            institute.appendChild(option);
+                        }
+                        //更新 lay-filter="test2" 所在容器内的全部 select 状态
+                        form.render('select');
+                    }
+                }
+            });
+        }
+        getAllInstitute();//获取二级学院列表
+    });
+</script>
+</body>
+</html>

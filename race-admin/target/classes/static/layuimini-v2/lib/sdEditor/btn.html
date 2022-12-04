@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no" />
+<meta name="renderer" content="webkit" />
+<title>sdEditor富文本编辑器 - 轻量级web富文本编辑器 - 移动端富文本编辑器 - 可视化Html网页编辑器</title>
+<meta name="keywords" content="sdEditor,富文本编辑器,开源html编辑器,可视化html编辑器,移动端富文本编辑器">
+<meta name="description" content="sdEditor是一款基于Jquery开发的轻量化、所见即所得的web富文本编辑器，体积小、安全性高、同时支持一个页面多次调用，支持移动端自适应使用。有效过滤XSS攻击，不破坏Html结构。">
+<link rel="stylesheet" href="public/css/ui.css">
+<link rel="stylesheet" href="public/css/style.css">
+<script src="public/js/jquery.js"></script>
+<script src="editor/editor.js"></script>
+</head>
+
+<body>
+	    
+	<h1>sdEditor富文本编辑器</h1>
+    <div class="ui-demo">
+        <div class="ui-tabs ui-tabs-white" data-href="1">
+            <ul class="ui-tabs-nav">
+                <li><a href="./">调用方式</a></li>
+                <li><a href="./param.html">可选参数</a></li>
+                <li><a href="./mode.html">模式演示</a></li>
+                <li><a href="./toolbar.html">自定义工具条</a></li>
+                <li class="active"><a href="./btn.html">自定义按钮</a></li>
+                <li><a href="./upload.html">上传演示</a></li>
+                <li><a href="./api.html">接口交互</a></li>
+            </ul>
+            <div class="ui-tabs-content">
+                <div class="ui-tabs-pane active">
+                     <!---->
+                     <div class="ui-menu ui-menu-blue ui-mb-30"><div class="ui-menu-name">自定义按钮</div></div>
+                     <div id="content"><h3><font color="#ff3300">sdEditor</font>支持自定义按钮。</h3><pre>$("#content").editor({toolbar:{left:['test1','test2','test3']}});</pre><p><b><font color="#ff3300">说明：</font></b>本文档提供了：点击、下拉菜单、对话框三种按钮示范，详细方法做了注释，请自行查阅本文档源代码。</p></div>
+                     
+                     <!---->
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+	$(function()
+	{
+		var plugdata=
+		{
+			test1:
+			{
+				name:'测试1',
+				icon:'omega',
+				click:function(e)
+				{
+					/*写入内容*/
+					e.insertHtml('写入测试内容');
+				}
+			},
+			test2:
+			{
+				name:'测试2',
+				icon:'quote',
+				html:function(e)
+				{
+					return '<a href="javascript:;" class="ui-editor-test" style="padding:15px;display:block;">先选中文字，再点我测试</a>'
+				},
+				even:function(e)
+				{
+					e.editor.find(".ui-editor-test").click(function()
+					{
+						/*实现加粗效果*/
+						e.exec('bold');
+						/*隐藏面板*/
+						e.hidePanel();
+					})
+				}
+			},
+			test3:
+			{
+				name:'对话框',
+				icon:'close',
+				dialog:function(e)
+				{
+					/*调用对话框*/
+					e.dialog(
+					{
+						title:'操作提示',
+						text:'确定要清空文档？',
+						ok:function(f)
+						{
+							e.setHtml('');
+							/*调用内置关闭对话框函数*/
+							f.close();
+						}
+					})
+				}
+			}
+		};
+		$("#content").editor({toolbar:{left:['test1','test2','test3']},plug:plugdata});
+		
+		/*以下和调用无关*/
+		var isMobile=navigator.userAgent.toLowerCase().match(/(iPhone|Android|mobile)/i)?true:false;
+		if(isMobile)
+		{
+			var index=$(".ui-tabs ul").find("li.active").index();
+			if(index>2)
+			{
+				$(".ui-tabs .ui-tabs-nav").scrollLeft((index*90));
+			}
+		}
+	})
+	</script>
+
+</body>
+</html>

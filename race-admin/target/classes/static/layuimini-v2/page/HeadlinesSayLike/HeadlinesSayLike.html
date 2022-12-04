@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>头条新闻评论点赞列表</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="../../lib/layui-v2.7.5/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="../../css/public.css" media="all">
+    <script src="../../js/BaseJs.js"></script>
+    <script src="../../lib/jquery-3.4.1/jquery-3.4.1.min.js"></script>
+    <style type="text/css">
+        .layui-table-cell {
+            /*text-align: center;*/
+            /*height: auto;*/
+            /*white-space: normal;*/
+            height: 40px;
+        }
+
+        .layui-table .userImg {
+            /*max-width: 35px;*/
+            /*width: 50px;*/
+            /*height: 50px;*/
+            width: 30px;
+            height: 30px;
+            border-radius: 35px;
+            border: 2px #ccc solid;
+        }
+
+        .layui-table .img {
+            width: 32px;
+            height: 32px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+
+        <!--信息搜索栏-->
+        <fieldset class="table-search-fieldset">
+            <legend>搜索信息</legend>
+            <div style="margin: 10px 10px 10px 10px">
+                <form class="layui-form layui-form-pane" action="">
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">点赞用户</label>
+                            <div class="layui-input-inline">
+                                <select name="user" id="user" lay-search lay-filter="">
+                                    <option value="">请选择点赞用户</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">评论内容</label>
+                            <div class="layui-input-inline">
+                                <select name="headlinesSay" id="headlinesSay" lay-search lay-filter="">
+                                    <option value="">请选择评论内容</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <button type="submit" class="layui-btn layui-btn-primary" lay-submit
+                                    lay-filter="data-search-btn"><i class="layui-icon"></i> 搜 索
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </fieldset>
+
+        <script type="text/html" id="toolbarDemo">
+            <div class="layui-btn-container">
+                <button class="layui-btn layui-btn-sm layui-btn-primary layui-border-green" lay-event="reload"> 刷新
+                </button>
+                <button class="layui-btn layui-btn-sm data-add-btn layui-btn-primary layui-border-blue" lay-event="add">
+                    添加
+                </button>
+                <button class="layui-btn layui-btn-sm data-delete-btn layui-btn-primary layui-border-red"
+                        lay-event="delete"> 删除
+                </button>
+                <button class="layui-btn layui-btn-sm layui-btn-primary" lay-event="multi-row">
+                    多行
+                </button>
+                <button class="layui-btn layui-btn-sm layui-btn-primary" lay-event="default-row">
+                    单行
+                </button>
+            </div>
+        </script>
+
+        <!--表格-->
+        <table class="layui-hide" id="headLinesSayLikeTableId" lay-filter="headLinesSayLikeTableFilter"></table>
+
+        <script type="text/html" id="headLinesSayLikeTableBar">
+            <a class="layui-btn layui-btn-xs data-count-edit"
+               lay-event="edit" style="background-color: #5FB878;">编辑</a>
+            <a class="layui-btn layui-btn-xs layui-btn-danger data-count-delete" lay-event="delete">删除</a>
+        </script>
+
+    </div>
+</div>
+<script src="../../lib/layui-v2.7.5/layui/layui.js" charset="utf-8"></script>
+<script>
+    var layer;
+    var form;
+    layui.use(['form', 'table', 'layer', 'upload'], function () {
+        var $ = layui.jquery;
+        var table = layui.table;
+        form = layui.form;
+        layer = layui.layer;
+        var upload = layui.upload;
+
+        table.render({//动态加载表格
+            elem: '#headLinesSayLikeTableId',//绑定表格
+            url: BaseUrl + 'headlinesSayLike/findByPage',//请求地址
+            method: 'post',
+            toolbar: '#toolbarDemo',//头部工具栏
+            headers: {
+                "X-token": localStorage.getItem("X-token")
+            }, //请求头 token写在这里
+            where: {
+                headlinesSayId: -1,
+                userId: -1,
+            },//查询条件
+            parseData: function (res) { //res即为原始的数据返回
+                return {
+                    "code" : 0,
+                    "msg": res.message,
+                    "count": res.count,
+                    "data":res.data
+                }
+            },
+            defaultToolbar: ['filter', 'exports', 'print', {
+                title: '提示',
+                layEvent: 'LAYTABLE_TIPS',
+                icon: 'layui-icon-tips'
+            }],
+            title: "头条新闻列表", //表名称
+            cols: [[
+                {type: "checkbox", width: 50, fixed: 'left'},
+                {field: 'id', width: 70, title: 'ID', sort: true, fixed: 'left'},
+                {
+                    field: 'likeUserImg',
+                    width: 60,
+                    title: '头像',
+                    templet: '<div><img src="{{d.likeUserImg}}" class="userImg"/></div>'
+                },
+                {field: 'likeUserName', width: 150, title: '点赞用户', sort: true},
+                {field: 'sayContent', width: 300, title: '评论', sort: true},
+                {
+                    field: 'sayUserImg',
+                    width: 60,
+                    title: '头像',
+                    templet: '<div><img src="{{d.sayUserImg}}" class="userImg"/></div>'
+                },
+                {field: 'sayUserName', width: 150, title: '评论用户', sort: true},
+                {
+                    field: 'headlinesImg', width: 63, title: '封面',
+                    templet: '<div><img src="{{d.headlinesImg}}" class="img"/></div>'
+                },
+                {field: 'headlinesName', width: 250, title: '标题', sort: true},
+                {title: '操作', minWidth: 125, toolbar: '#headLinesSayLikeTableBar', align: "center", fixed: 'right'}
+            ]],
+            limits: [10, 15, 20, 25, 50, 100],
+            limit: 10,
+            page: { //支持传入 laypage 组件的所有参数（某些参数除外，如：jump/elem） - 详见文档
+                layout: ['prev', 'page', 'next', 'skip', 'count', 'limit'], //自定义分页布局
+                theme: '#393D49'
+                , first: false //不显示首页
+                , last: false  //不显示尾页
+            },
+            lineStyle: null,
+            text: {
+                none: '暂无相关数据' //默认：无数据。
+            }
+            // lineStyle:  'height: 95px;' //多行
+            // skin: 'line'//行边框风格
+        });
+
+        // 行双击事件
+        table.on('rowDouble(headLinesSayLikeTableFilter)', function (obj) {
+            var data = obj.data;
+            var id = data.id;
+            //头条封面
+            var headlinesImg = data.headlinesImg;
+            //点赞用户
+            var likeUserName = data.likeUserName;
+            //评论用户
+            var sayUserName = data.sayUserName;
+            //评论
+            var sayContent = data.sayContent;
+            var headlinesName = data.headlinesName;//标题
+
+            //单机行，弹出层
+            var index = layer.open({
+                title: '头条新闻评论点赞信息',
+                type: 1,
+                shade: 0.8,
+                btn: '关闭', //按钮
+                btnAlign: 'c', //按钮居中
+                area: ['300px', '350px'],
+                btnColor: '#5FB878',
+                content: '<div style="text-align: center; margin: 20px 0"><img src="'+headlinesImg+'" style="width:40px; height: 40px; border-radius: 5px;"></div>' +
+                    '<div style="text-align: center; font-size: 12px;margin: 10px 0;"><span style="font-weight: bolder;">评论点赞ID:</span> &nbsp;&nbsp;&nbsp;&nbsp;'+id+'</div>' +
+                    '<div style="text-align: center; font-size: 12px;margin: 10px 0;"><span style="font-weight: bolder;">评论内容:</span> &nbsp;&nbsp;&nbsp;&nbsp;'+sayContent+'</div>' +
+                    '<div style="text-align: center; font-size: 12px;margin: 10px 0;"><span style="font-weight: bolder;">点赞用户:</span> &nbsp;&nbsp;&nbsp;&nbsp;'+likeUserName+'</div>' +
+                    '<div style="text-align: center; font-size: 12px;margin: 10px 0;"><span style="font-weight: bolder;">评论用户:</span> &nbsp;&nbsp;&nbsp;&nbsp;'+sayUserName+'</div>' +
+                    '<div style="text-align: center; font-size: 12px;margin: 10px 0;"><span style="font-weight: bolder;">头条标题:</span> &nbsp;&nbsp;&nbsp;&nbsp;'+headlinesName+'</div>'
+            });
+        });
+
+        // 监听搜索操作
+        form.on('submit(data-search-btn)', function (data) {
+            // var result = JSON.stringify(data.field);
+            // layer.alert(result, {
+            //     title: '最终的搜索信息'
+            // });
+
+            var user;
+            if ($("#user").val() === '') {
+                user = -1;
+            } else {
+                user = parseInt($("#user").val());
+            }
+            var headlinesSay;
+            if ($("#headlinesSay").val() === '') {
+                headlinesSay = -1;
+            } else {
+                headlinesSay = parseInt($("#headlinesSay").val());
+            }
+            //执行搜索重载
+            table.reload('headLinesSayLikeTableId', {
+                url: BaseUrl + "headlinesSayLike/findByPage",
+                method: 'post',
+                request: { //往后端传入的参数的名称
+                    pageName: 'page',
+                    limitName: "limit"
+                },
+                where: {
+                    headlinesSayId: headlinesSay,
+                    userId: user
+                },
+                page: {
+                    curr: 1, //当前页码
+                    //支持传入 laypage 组件的所有参数（某些参数除外，如：jump/elem） - 详见文档
+                    layout: ['prev', 'page', 'next', 'skip', 'count', 'limit'], //自定义分页布局
+                    theme: '#393D49'
+                    , first: false //不显示首页
+                    , last: false  //不显示尾页
+                }
+            });
+
+            return false;
+        });
+
+        /**
+         * toolbar监听事件
+         */
+        table.on('toolbar(headLinesSayLikeTableFilter)', function (obj) {
+            if (obj.event === 'add') {  // 监听添加操作
+                var index = layer.open({
+                    title: '添加新闻头条评论点赞记录',
+                    type: 2,
+                    shade: 0.2,
+                    maxmin: true,
+                    shadeClose: true,
+                    area: ['100%', '100%'],
+                    content: 'addHeadLinesSayLike.html',
+                    end: function () {//关闭后回调
+                        reload();//刷新
+                    }
+                });
+                $(window).on("resize", function () {
+                    layer.full(index);
+                });
+            } else if (obj.event === 'delete') {  // 监听删除操作
+                var checkStatus = table.checkStatus('userTableLikeId')
+                    , data = checkStatus.data;
+                // layer.alert(JSON.stringify(data));
+                //JSON.stringify(data)：将data转换为json
+                //JSON.stringify(data).length:是 json字符串的长度
+
+                var len = data.length;
+                //将选中的行进行删除
+                if (len >= 1) {
+                    layer.confirm('确定删除选中的头条新闻评论点赞记录么？', {
+                        title: '删除'
+                    }, function (index) {
+                        for (var i = 0; i < len; i++) {
+                            $.ajax({
+                                url: BaseUrl + 'headlinesSayLike/DeleteById',
+                                method: 'post',
+                                data: {
+                                    id: data[i].id
+                                },
+                                beforeSend: function (request) {      //使用beforeSend
+                                    request.setRequestHeader("X-token", localStorage.getItem("X-token"));
+                                    // request.setRequestHeader("Content-Type","application/json");
+                                }, //token
+                                success: function (res) {//成功回调
+                                    // var object = JSON.parse(res)
+                                    if (res.code === 0 && i === len) {
+                                        // 关闭弹出层
+                                        layer.close(index);
+                                        layer.msg("删除成功！", {icon: 6});
+                                        reload(); //刷新表格
+                                    } else {
+                                        layer.msg("删除失败！", {icon: 5});
+                                    }
+                                }
+                            });
+                        }
+                    }, function () {
+                        layer.msg("你点击了取消按钮！");
+                    });
+                } else if (len === 0) {
+                    layer.alert('您没有选中任何一个头条新闻评论点赞记录!', {icon: 7});
+                }
+            } else if (obj.event === 'reload') {//刷新页面
+                reload();
+            } else if (obj.event === 'multi-row') { //设置多行
+                table.reload('headLinesSayLikeTableId', {
+                    // 设置行样式，此处以设置多行高度为例。若为单行，则没必要设置改参数 - 注：v2.7.0 新增
+                    lineStyle: 'height: 100px;'
+                });
+                layer.msg('成功切换为多行模式！');
+            } else if (obj.event === 'default-row') { //设置单行
+                table.reload('headLinesSayLikeTableId', {
+                    lineStyle: null // 恢复单行
+                });
+                layer.msg('成功切换为单行模式！');
+            }
+        });
+
+        //监听表格复选框选择
+        table.on('checkbox(headLinesSayLikeTableFilter)', function (obj) {
+            console.log(obj)
+        });
+
+        table.on('tool(headLinesSayLikeTableFilter)', function (obj) {
+            var data = obj.data;
+            if (obj.event === 'edit') {//修改头条新闻
+                localStorage.setItem("id01", data.id);
+                localStorage.setItem("headlinesSay01", data.headlinesSay);
+                localStorage.setItem("user01", data.user);
+                var index = layer.open({
+                    title: '编辑头条新闻评论点赞记录',
+                    type: 2,
+                    shade: 0.2,
+                    maxmin: true,
+                    shadeClose: true,
+                    area: ['100%', '100%'],
+                    content: 'upHeadLinesSayLike.html',
+                    end: function () {//关闭后回调
+                        reload();//刷新
+                    }
+                });
+                $(window).on("resize", function () {
+                    layer.full(index);
+                });
+                return false;
+            } else if (obj.event === 'delete') { //删除此用户
+                layer.confirm('确定删除此头条新闻评论点赞记录么？', {
+                    title: '删除'
+                }, function (index) {
+
+                    //删除此用户权限
+                    $.ajax({
+                        url: BaseUrl + 'headlinesSayLike/DeleteById',
+                        method: 'post',
+                        data: {
+                            id: data[i].id
+                        },
+                        beforeSend: function (request) {      //使用beforeSend
+                            request.setRequestHeader("X-token", localStorage.getItem("X-token"));
+                            // request.setRequestHeader("Content-Type","application/json");
+                        }, //token
+                        success: function (res) {//成功回调
+                            // var object = JSON.parse(res);
+                            if (res.code === 0) {
+                                obj.del();//删除这行
+                                // 关闭弹出层
+                                layer.close(index);
+                                layer.msg("删除成功！", {icon: 6});
+                            } else {
+                                layer.msg("删除失败！", {icon: 5});
+                            }
+                        }
+                    });
+                }, function () {
+                    layer.msg("你点击了取消按钮！");
+                });
+            }
+        });
+
+    });
+
+    //刷新页面
+    function reload() {
+        var table = layui.table;
+        table.reload('headLinesSayLikeTableId', {
+            url: BaseUrl + "headlinesSayLike/findByPage",
+            method: 'post',
+            request: { //往后端传入的参数名称
+                pageName: 'page',
+                limitName: 'limit'
+            },
+            where: {
+                headlinesSayId: -1,
+                userId: -1
+            },
+            page: {
+                curr: 1,//当前页码
+                //支持传入 laypage 组件的所有参数（某些参数除外，如：jump/elem） - 详见文档
+                layout: ['prev', 'page', 'next', 'skip', 'count', 'limit'], //自定义分页布局
+                theme: '#393D49'
+                , first: false //不显示首页
+                , last: false  //不显示尾页
+            }
+        });
+    }
+
+    $(function () {
+        //获取用户列表
+        var getAllUser = function () {
+            $.ajax({
+                url: BaseUrl + 'user/getAllUser',
+                method: 'get',
+                data: {},
+                beforeSend: function (request) {      //使用beforeSend
+                    request.setRequestHeader("X-token", localStorage.getItem("X-token"));
+                    // request.setRequestHeader("Content-Type","application/json");
+                }, //token
+                success: function (res) {
+                    // var object = JSON.parse(res);
+                    if (res.code === 0) {
+                        // console.log(object.data)
+                        for (let i = 0; i < res.data.length; i++) {
+                            var option = document.createElement("option");
+                            option.setAttribute("value", res.data[i].id);
+                            option.innerHTML = res.data[i].name;
+
+                            var user = document.getElementById("user");
+                            user.appendChild(option);
+                        }
+                        //更新 lay-filter="test2" 所在容器内的全部 select 状态
+                        form.render('select');
+                    }
+                }
+            });
+        }
+        getAllUser();//获取用户列表
+
+        var getAllHeadlinesSay = function () {
+            $.ajax({
+                url: BaseUrl + 'headlinesSay/getAllUser',
+                method: 'get',
+                data: {},
+                beforeSend: function (request) {      //使用beforeSend
+                    request.setRequestHeader("X-token", localStorage.getItem("X-token"));
+                    // request.setRequestHeader("Content-Type","application/json");
+                }, //token
+                success: function (res) {
+                    // var object = JSON.parse(res);
+                    if (res.code === 0) {
+                        // console.log(object.data)
+                        for (let i = 0; i < res.data.length; i++) {
+                            var option = document.createElement("option");
+                            option.setAttribute("value", res.data[i].id);
+                            option.innerHTML = res.data[i].say;
+
+                            var headlinesSay = document.getElementById("headlinesSay");
+                            headlinesSay.appendChild(option);
+                        }
+                        //更新 lay-filter="test2" 所在容器内的全部 select 状态
+                        form.render('select');
+                    }
+                }
+            });
+        }
+        getAllHeadlinesSay();//获取用户列表
+    });
+</script>
+</body>
+</html>

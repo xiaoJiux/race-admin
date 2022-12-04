@@ -1,0 +1,111 @@
+{
+  "code": 0,
+  "msg": "",
+  "count": "",
+  "data": [
+    {
+      "authorityId": 1,
+      "authorityName": "系统管理",
+      "orderNumber": 1,
+      "menuUrl": null,
+      "menuIcon": "layui-icon-set",
+      "createTime": "2022/9/16 10:24:00",
+      "authority": null,
+      "checked": 0,
+      "updateTime": "2022/9/16 10:24:00",
+      "isMenu": 0,
+      "parentId": -1
+    },
+    {
+      "authorityId": 2,
+      "authorityName": "图片管理",
+      "orderNumber": 2,
+      "menuUrl": "page/Img",
+      "menuIcon": null,
+      "createTime": "2022/9/16 10:24:00",
+      "authority": null,
+      "checked": 0,
+      "updateTime": "2022/9/16 10:24:00",
+      "isMenu": 0,
+      "parentId": 1
+    },
+    {
+      "authorityId": 3,
+      "authorityName": "上传图片",
+      "orderNumber": 3,
+      "menuUrl": "",
+      "menuIcon": "",
+      "createTime": "2022/9/16 10:24:00",
+      "authority": "files:upload",
+      "checked": 0,
+      "updateTime": "2022/9/16 10:24:00",
+      "isMenu": 1,
+      "parentId": 2
+    },
+    {
+      "authorityId": 4,
+      "authorityName": "用户管理",
+      "orderNumber": 4,
+      "menuUrl": "page/UserManager",
+      "menuIcon": null,
+      "createTime": "2022/9/16 10:24:00",
+      "authority": null,
+      "checked": 0,
+      "updateTime": "2022/9/16 10:24:00",
+      "isMenu": 0,
+      "parentId": 1
+    },
+    {
+      "authorityId": 5,
+      "authorityName": "查询用户",
+      "orderNumber": 5,
+      "menuUrl": "",
+      "menuIcon": "",
+      "createTime": "2022/9/16 10:24:00",
+      "authority": "user:findUserByPage",
+      "checked": 0,
+      "updateTime": "2022/9/16 10:24:00",
+      "isMenu": 1,
+      "parentId": 4
+    },
+    {
+      "authorityId": 6,
+      "authorityName": "添加用户",
+      "orderNumber": 6,
+      "menuUrl": null,
+      "menuIcon": null,
+      "createTime": "2022/9/16 10:24:00",
+      "authority": "user:save",
+      "checked": 0,
+      "updateTime": "2022/9/16 10:24:00",
+      "isMenu": 1,
+      "parentId": 4
+    },
+    {
+      "authorityId": 7,
+      "authorityName": "修改用户",
+      "orderNumber": 7,
+      "menuUrl": null,
+      "menuIcon": null,
+      "createTime": "2022/9/16 10:24:00",
+      "authority": "user:updateById",
+      "checked": 0,
+      "updateTime": "2022/9/16 10:24:00",
+      "isMenu": 1,
+      "parentId": 4
+    },
+    {
+      "authorityId": 8,
+      "authorityName": "删除用户",
+      "orderNumber": 8,
+      "menuUrl": null,
+      "menuIcon": null,
+      "createTime": "2022/9/16 10:24:00",
+      "authority": "user:DeleteById",
+      "checked": 0,
+      "updateTime": "2022/9/16 10:24:00",
+      "isMenu": 1,
+      "parentId": 4
+    }
+  ]
+}
